@@ -23,7 +23,7 @@ def get_session_stripe(request, item_id):
                 'product_data': {
                     'name': item.name,
                 },
-                'unit_amount': int(item.price),
+                'unit_amount': int(item.price * 100) ,
             },
             'quantity': 1,
         }],
@@ -40,3 +40,10 @@ def success_view(request):
 
 def cancel_view(request):
     return render(request, 'cancel.html')
+
+
+def pay_items(request, item_id):
+    item = Item.objects.get(pk=item_id)
+    stripe_public_key = os.getenv('STRIPE_PUBLISHABLE_KEY')
+    context = {'item': item, 'stripe_public_key': stripe_public_key}
+    return render(request, 'buy.html', context)
