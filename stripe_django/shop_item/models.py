@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 CURRENCY_CHOICES = (
     ('USD', 'USD'),
@@ -58,6 +59,7 @@ class Order(models.Model):
     """
     Модель заказа
     """
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     items = models.ManyToManyField(Item, verbose_name='Товары', related_name='orders')
     created_at = models.DateTimeField(auto_now_add=True)
     discount = models.ForeignKey(Discount, on_delete=models.SET_NULL, null=True, blank=True)

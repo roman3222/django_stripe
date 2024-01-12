@@ -1,12 +1,13 @@
 from django.shortcuts import reverse
 
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
 import stripe
 from .models import Order, Item
 from django.shortcuts import get_object_or_404
 import os
+from django.views import View
 
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 
@@ -47,3 +48,22 @@ def pay_items(request, item_id):
     stripe_public_key = os.getenv('STRIPE_PUBLISHABLE_KEY')
     context = {'item': item, 'stripe_public_key': stripe_public_key}
     return render(request, 'buy.html', context)
+
+
+class StripeIntentView(View):
+    def post(self, request, user_id):
+        try:
+            order = Order.objects.get(user=user_id)
+            sum_price = []
+            for orders in order:
+                price_order = sum(orders)
+                sum_price.append(price_order)
+            intent = stripe.PaymentIntent.create(
+                amount=sum_price[0],
+                currency='usd',
+            )
+            return JsonResponse({
+                'clientSecret': intent['client_secret']
+            })
+        except Exception as e:
+            return JsonResponse({'error': str(e)})

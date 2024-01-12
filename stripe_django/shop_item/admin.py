@@ -51,9 +51,9 @@ class OrderAdmin(admin.ModelAdmin):
     Панель управления заказами
     """
     fieldsets = (
-        (None, {'fields': ('discount', 'tax')}),
+        (None, {'fields': ('user', 'discount', 'tax')}),
     )
-    list_display = ('id', 'get_items', 'discount', 'tax', 'created_at', 'total_price')
+    list_display = ('id', 'user', 'get_items', 'discount', 'tax', 'created_at', 'total_price')
     list_filter = ('created_at',)
     inlines = [ItemInline]
 
