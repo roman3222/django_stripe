@@ -174,8 +174,15 @@ button:disabled {
           alt="The cover of Stubborn Attachments"
         /> {% endcomment %}
         <div class="description">
-          <h3>{{ orders.items }}</h3>
-          <h5>Price: {{ total_amount }}</h5>
+          <h3>Your order:</h3>
+          {% for orders in order %}
+            {% for items in orders.items.all %}
+            <p>{{ items.name }} - {{ items.price }} {{ items.currency }};</p>
+          {% endfor %}
+            {% endfor %}
+          <p>Your tax: {{ tax }}</p>
+          <p> Your discount: {{ discount }}</p>
+          <p>Price: {{ total_amount }}</p>
         </div>
       </div>
       <button type="button" id="checkout-button">Checkout</button>

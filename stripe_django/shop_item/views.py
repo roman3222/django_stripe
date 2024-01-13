@@ -72,6 +72,9 @@ def create_payment_intent(request, user_id):
 def pay_order(request, user_id):
     order = Order.objects.filter(user=user_id)
     total_amount = sum(order.total_price() for order in order)
+    discount = order.first().discount
+    tax = order.first().tax
+    all_items = [item for order in order for item in order.items.all()]
     client_secret = create_payment_intent(request, user_id)
     stripe_public_key = get_public_key()
     context = {
@@ -79,5 +82,8 @@ def pay_order(request, user_id):
         'stripe_public_key': stripe_public_key,
         'order': order,
         'total_amount': total_amount,
+        'all_items': all_items,
+        'discount': discount,
+        'tax': tax,
     }
     return render(request, 'buy_order.html', context)
