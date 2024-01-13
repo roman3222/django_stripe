@@ -1,15 +1,19 @@
 from django.shortcuts import reverse
 
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 import stripe
 from .models import Order, Item
 from django.shortcuts import get_object_or_404
 import os
-from django.views import View
 
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
+
+
+def get_public_key():
+    stripe_public_key = os.getenv('STRIPE_PUBLISHABLE_KEY')
+    return stripe_public_key
 
 
 @require_http_methods(['GET'])
@@ -24,7 +28,7 @@ def get_session_stripe(request, item_id):
                 'product_data': {
                     'name': item.name,
                 },
-                'unit_amount': int(item.price * 100) ,
+                'unit_amount': int(item.price * 100),
             },
             'quantity': 1,
         }],
@@ -45,25 +49,35 @@ def cancel_view(request):
 
 def pay_items(request, item_id):
     item = Item.objects.get(pk=item_id)
-    stripe_public_key = os.getenv('STRIPE_PUBLISHABLE_KEY')
+    stripe_public_key = get_public_key()
     context = {'item': item, 'stripe_public_key': stripe_public_key}
     return render(request, 'buy.html', context)
 
 
-class StripeIntentView(View):
-    def post(self, request, user_id):
-        try:
-            order = Order.objects.get(user=user_id)
-            sum_price = []
-            for orders in order:
-                price_order = sum(orders)
-                sum_price.append(price_order)
-            intent = stripe.PaymentIntent.create(
-                amount=sum_price[0],
-                currency='usd',
-            )
-            return JsonResponse({
-                'clientSecret': intent['client_secret']
-            })
-        except Exception as e:
-            return JsonResponse({'error': str(e)})
+def create_payment_intent(request, user_id):
+    try:
+        orders = Order.objects.filter(user=user_id)
+        total_amount = sum(order.total_price() for order in orders)
+        intent = stripe.PaymentIntent.create(
+            amount=int(total_amount * 100),
+            currency=orders[0].items.first().currency if orders else 'usd',
+        )
+        return JsonResponse({
+            'clientSecret': intent['client_secret']
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)})
+
+
+def pay_order(request, user_id):
+    order = Order.objects.filter(user=user_id)
+    total_amount = sum(order.total_price() for order in order)
+    client_secret = create_payment_intent(request, user_id)
+    stripe_public_key = get_public_key()
+    context = {
+        'client_secret': client_secret,
+        'stripe_public_key': stripe_public_key,
+        'order': order,
+        'total_amount': total_amount,
+    }
+    return render(request, 'buy_order.html', context)

@@ -69,6 +69,12 @@ class Order(models.Model):
         verbose_name = 'Заказ'
         verbose_name_plural = 'Список заказов'
 
+    def currencies(self):
+        """
+        Получить  валют товаров в заказе
+        """
+        return self.items.values_list('currency', flat=True).distinct()
+
     def total_price(self):
         """
         Функция для подсчета общей суммы заказа с учетом скидки и налога
