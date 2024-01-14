@@ -1,0 +1,33 @@
+version: '3.9'
+services:
+  db_app:
+    image: postgres:15
+    container_name: db_app
+    restart: always
+    environment:
+      POSTGRES_DB: ${db_name}
+      POSTGRES_PASSWORD: ${db_password}
+      POSTGRES_USER: ${db_user}
+    ports:
+      - "5431:5432"
+
+
+  stripe_django:
+    build: ./
+    restart: always
+    command: sh -c "gunicorn --bind 0.0.0.0:8000 stripe_django.wsgi"
+    volumes:
+      - ./stripe_django:/stripe_django
+    depends_on:
+      - db_app
+    ports:
+      - '8000:8000'
+    env_file:
+      - ./.env
+
+  nginx:
+
+
+volumes:
+  stripe_django:
+
