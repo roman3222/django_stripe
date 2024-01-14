@@ -1,7 +1,7 @@
 from django.shortcuts import reverse
 
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpRequest, HttpResponse
 from django.views.decorators.http import require_http_methods
 import stripe
 from .models import Order, Item
@@ -11,13 +11,13 @@ import os
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 
 
-def get_public_key():
+def get_public_key() -> str:
     stripe_public_key = os.getenv('STRIPE_PUBLISHABLE_KEY')
     return stripe_public_key
 
 
 @require_http_methods(['GET'])
-def get_session_stripe(request, item_id):
+def get_session_stripe(request, item_id: int) -> JsonResponse:
     item = get_object_or_404(Item, pk=item_id)
 
     session = stripe.checkout.Session.create(
@@ -39,22 +39,22 @@ def get_session_stripe(request, item_id):
     return JsonResponse({'session_id': session.id})
 
 
-def success_view(request):
+def success_view(request: HttpRequest) -> HttpResponse:
     return render(request, 'success.html')
 
 
-def cancel_view(request):
+def cancel_view(request: HttpRequest) -> HttpResponse:
     return render(request, 'cancel.html')
 
 
-def pay_items(request, item_id):
+def pay_items(request: HttpRequest, item_id: int) -> HttpResponse:
     item = Item.objects.get(pk=item_id)
     stripe_public_key = get_public_key()
     context = {'item': item, 'stripe_public_key': stripe_public_key}
     return render(request, 'buy.html', context)
 
 
-def create_payment_intent(request, user_id):
+def create_payment_intent(request, user_id: int) -> JsonResponse:
     try:
         orders = Order.objects.filter(user=user_id)
         total_amount = sum(order.total_price() for order in orders)
@@ -69,7 +69,7 @@ def create_payment_intent(request, user_id):
         return JsonResponse({'error': str(e)})
 
 
-def pay_order(request, user_id):
+def pay_order(request: HttpRequest, user_id: int) -> HttpResponse:
     order = Order.objects.filter(user=user_id)
     total_amount = sum(order.total_price() for order in order)
     discount = order.first().discount

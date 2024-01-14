@@ -25,9 +25,6 @@ services:
     env_file:
       - ./.env
 
-  nginx:
-
-
 volumes:
   stripe_django:
 

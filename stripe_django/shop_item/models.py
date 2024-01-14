@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from typing import List
 
 CURRENCY_CHOICES = (
     ('USD', 'USD'),
@@ -69,13 +70,13 @@ class Order(models.Model):
         verbose_name = 'Заказ'
         verbose_name_plural = 'Список заказов'
 
-    def currencies(self):
+    def currencies(self) -> List[str]:
         """
         Получить  валют товаров в заказе
         """
         return self.items.values_list('currency', flat=True).distinct()
 
-    def total_price(self):
+    def total_price(self) -> float:
         """
         Функция для подсчета общей суммы заказа с учетом скидки и налога
         """
