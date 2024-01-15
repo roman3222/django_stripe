@@ -11,6 +11,10 @@ import os
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 
 
+def index_view(request):
+    return render(request, 'index.html')
+
+
 def get_public_key() -> str:
     stripe_public_key = os.getenv('STRIPE_PUBLISHABLE_KEY')
     return stripe_public_key

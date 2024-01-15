@@ -9,6 +9,7 @@ WORKDIR /stripe_django
 EXPOSE 8000
 
 
+RUN python manage.py migrate
 RUN pip install -r /req/requirements.txt
 
 

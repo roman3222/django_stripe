@@ -1,9 +1,11 @@
 from django.urls import path
-from .views import get_session_stripe, success_view, cancel_view, pay_items, create_payment_intent, pay_order
+from .views import get_session_stripe, success_view, cancel_view, pay_items, create_payment_intent, pay_order, \
+    index_view
 from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
+    path('', index_view, name='index_view'),
     path('buy/<int:item_id>/', get_session_stripe, name='get-session'),
     path('success/', success_view, name='success_view'),
     path('cancel/', cancel_view, name='cancel_view'),
