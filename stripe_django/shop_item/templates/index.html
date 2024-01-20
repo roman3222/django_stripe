@@ -11,9 +11,7 @@
     <p>Выберите действие:</p>
 
     <ul>
-        <li><a href="{% url 'get-session' item_id=1 %}">Получить session_id</a></li>
         <li><a href="{% url 'pay_items' item_id=1 %}">Оплатить товар</a></li>
-        <li><a href="{% url 'payment-view' user_id=1 %}">Получить client_secret</a></li>
         <li><a href="{% url 'pay_order' user_id=1 %}">Оплатить заказ</a></li>
     </ul>
 
