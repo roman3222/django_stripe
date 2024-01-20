@@ -24,7 +24,7 @@
         var stripe = Stripe('{{ stripe_public_key }}');
 
         document.getElementById('checkout-button').addEventListener('click', function () {
-            fetch('http://127.0.0.1:8000/shop/buy/{{ item.id }}/', {
+            fetch('http://127.0.0.1:8000/buy/{{ item.id }}/', {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',

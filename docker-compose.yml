@@ -12,18 +12,18 @@ services:
       - "5431:5432"
 
 
-  stripe_django:
-    build: ./
-    restart: always
-    command: sh -c "gunicorn --bind 0.0.0.0:8000 stripe_django.wsgi"
-    volumes:
-      - static_volume:/stripe_django/static
-    depends_on:
-      - db_app
-    ports:
-      - '8000:8000'
-    env_file:
-      - ./.env
+#  stripe_django:
+#    build: ./
+#    restart: always
+#    command: sh -c "gunicorn --bind 0.0.0.0:8000 stripe_django.wsgi"
+#    volumes:
+#      - static_volume:/stripe_django/static
+#    depends_on:
+#      - db_app
+#    ports:
+#      - '8000:8000'
+#    env_file:
+#      - ./.env
 
 #  nginx:
 #    build: ./nginx
