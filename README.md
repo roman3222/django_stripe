@@ -59,7 +59,6 @@
 
 ## Stripe
 - Документация https://stripe.com/docs
-- 
 
 ## Использование
 
