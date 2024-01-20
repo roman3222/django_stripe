@@ -19,8 +19,8 @@ class Item(models.Model):
     currency = models.CharField(verbose_name='Валюта', choices=CURRENCY_CHOICES, default='RUB', max_length=10)
 
     class Meta:
-        verbose_name = 'Товар',
-        verbose_name_plural = 'Список товаров',
+        verbose_name = 'Товар'
+        verbose_name_plural = 'Список товаров'
 
     def __str__(self):
         return self.name
@@ -72,7 +72,7 @@ class Order(models.Model):
 
     def currencies(self) -> List[str]:
         """
-        Получить  валют товаров в заказе
+        Получить  валюту товаров в заказе
         """
         return self.items.values_list('currency', flat=True).distinct()
 
